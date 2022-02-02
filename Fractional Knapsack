@@ -1,0 +1,35 @@
+bool compare(pii p1, pii p2) {
+    double v1 = (double)p1.first / p1.second;
+    double v2 = (double)p2.first / p2.second;
+    return v1 > v2;
+}
+
+
+#define FIO ios_base::sync_with_stdio(false);cin.tie(0);cout.tie(0)
+#define test ll t; cin>>t; while(t--)
+int main()
+{
+    ios::sync_with_stdio(0);
+    cin.tie(0); cout.tie(0);
+    // freopen("input.txt","r",stdin); freopen("output.txt","w",stdout);
+    int n; cin >> n;
+    vpii a(n);
+    rep(i, 0, n) {
+        cin >> a[i].first >> a[i].second;
+    }
+    sort(a.begin(), a.end(), compare);
+    int w; cin >> w; //knapsack capacity
+    int ans = 0;
+    rep(i, 0, n) {
+        if (w >= a[i].first) {
+            ans += a[i].first;
+            w -= a[i].second;
+            continue;
+        }
+        double vw = (double)a[i].first / a[i].second;
+        ans += vw * w;
+        w = 0;
+        break;
+    }
+    return 0;
+}
