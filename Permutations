@@ -1,0 +1,45 @@
+// Permutations
+// idea: if u r at index idx, try out all possible swap
+// ensuring u don't produce duplicates
+//COMPLEXITY - O(N!)
+vector<vi> ans;
+void permute(vector<int>& a, int idx) {
+    if (idx == a.size()) {
+        ans.pb(a);
+        return;
+    }
+    for (int i = idx; i < a.size(); i++) {
+        swap(a[i], a[idx]);
+        permute(a, idx + 1);
+        swap(a[i], a[idx]);
+    }
+}
+// STL trick (complexity-O(N!))
+/*
+sort(nums.begin(),nums.end());
+do{
+    ans.pb(nums);
+}while(next_permutation(nums.begin(),nums.end());
+*/
+
+// Find unique permutations, where array may contain duplicates
+// idea: while swapping avoid duplicates
+void helper(vi a, vector<vi>& ans, int idx) {
+    if (idx == a.size()) {
+        ans.push_back(a);
+        return;
+    }
+    for (int i = idx; i < a.size(); i++) {
+        if (i != idx && a[i]==a[idx]) {
+            continue;
+        }
+        swap(a[i], a[idx]);
+        helper(a, ans, idx + 1);
+    }
+}
+vector<vi> permute(vi nums) {
+    sort(nums.begin(), nums.end());
+    vector<vi> ans;
+    helper(nums, ans, 0);
+    return ans;
+}
