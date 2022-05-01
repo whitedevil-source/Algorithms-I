@@ -1,0 +1,62 @@
+//3 sum problem
+    int n; cin >> n;
+    int target; cin >> target;
+    vi a(n);
+    for (auto& i : a) {
+        cin >> i;
+    }
+    bool found = false;
+    sort(a.begin(), a.end());
+    rep(i, n) {
+        int lo = i + 1, hi = n - 1;
+        while (lo < hi) {
+            int current = a[i] + a[lo] + a[hi];
+            if (current == target) found = true;
+            if (current < target) lo++;
+            else hi--;
+        }
+    }
+    if (found) cout << "true";
+    else cout << "false";
+    
+    // maximum consecutive ones:
+    /*
+    * given an  array of 0s and 1s we may change upto K values from 0 to 1
+    * return the length of longest contiguous subarray that contain only 1s
+    * idea: find the longest subarray with atmost K zeroes
+    * For each A[j], try to find the longest subarray
+    * if A[i]~A[j] has zeroes<=K, we continue to increment j
+    * if A[i]~A[j] has zeroes> K, we increment i (as well as j)
+    */
+    int n; cin >> n;
+    int k; cin >> k;
+    vi a(n);
+    for (auto& i : a) cin >> i;
+    int zerocnt = 0, i = 0, ans = 0;
+    rep(j, n) {
+        if (a[j] == 0) zerocnt++;
+        while (zerocnt > k) {
+            if (a[i] == 0) zerocnt--;
+            i++;
+        }
+        //if zerocnt<=k
+        ans = max(ans, j - i + 1);
+    }
+    cout << ans;
+    
+    //Longest substring without repeating character
+    /*
+    * Idea: while iterating mark the position of each character
+    * At ith character check the previous occurence and decide
+    * the start of the substring accordingly
+    */
+    string s; cin >> s;
+    vi dict(256, -1);
+    int maxLen = 0, start = -1;
+    rep(i, s.size()) {
+        if (dict[s[i]] > start) start = dict[s[i]];
+        dict[s[i]] = i;
+        maxLen = max(maxLen, i - start);
+    }
+    cout << maxLen;
+    
