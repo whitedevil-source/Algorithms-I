@@ -1,0 +1,685 @@
+#include<iostream>
+#include<algorithm>
+#include<vector>
+#include<sstream>
+#include<stack>
+#include<queue>
+#include<deque>
+#include<cmath>
+#include<iomanip>
+#include<set>
+#include<map>
+#include<utility>
+
+
+using namespace std;
+
+#define ll long long
+#define pb push_back
+#define pll pair<ll,ll> 
+#define mll map<ll,ll>
+#define pii pair<int,int>
+#define vpii vector<pii>
+#define rep(i,n) for(int i=0; i<n; i++)
+#define All(x,v) for(auto x:v)
+#define arrin(a,n) ll a[n]; rep(i,n) cin>>a[i]
+#define vi vector<int>
+#define vll vector<ll>
+#define nl "\n"
+#define print(arr) All(x,arr) cout<<x<<" "; cout<<nl
+#define sz(x) (int)x.size()
+#define all(v) v.begin(),v.end()
+#define ing(m,ad) rep(i,m){ int u,v; cin>>u>>v; u--;v--; ad[u].pb(v); ad[v].pb(u);}
+#define vdsort(v) sort(v.begin(),v.end(),greater<int>())
+#define F first
+#define S second
+#define mod 1'000'000'007
+const int MAXN = 100'005;
+int spf[MAXN];
+ll fac1[MAXN], fac2[MAXN], inv[MAXN];
+ll gcd(ll x, ll y) { return y ? gcd(y, x % y) : x; }
+
+template <typename C, typename T = std::decay_t<decltype(*begin(std::declval<C>()))>, typename std::enable_if<!std::is_same<C, std::string>::value>::type* = nullptr>
+std::ostream& operator<<(std::ostream& os, const C& container)
+{
+    bool first = true;
+    std::stringstream ss;
+    ss << '[';
+    for (const auto& x : container)
+    {
+        if (!first)
+        {
+            ss << ", ";
+        }
+        first = false;
+        ss << x;
+    }
+    ss << ']';
+    return os << ss.str();
+}
+template <class T1, class T2>
+std::ostream& operator<<(std::ostream& os, const std::pair<T1, T2>& p)
+{
+    os << '{' << p.first << ", " << p.second << '}';
+    return os;
+}
+vector<string> vec_splitter(string S)
+{
+    S += ',';
+    vector<string> res;
+    while (!S.empty())
+    {
+        res.push_back(S.substr(0, S.find(',')));
+        S = S.substr(S.find(',') + 1);
+    }
+    return res;
+}
+
+template <typename Head, typename... Tail>
+void debug_out(vector<string> args, int idx, int LINE_NUM, Head H, Tail... T)
+{
+    if (idx > 0)
+        cerr << ", ";
+    else
+        cerr << "Line(" << LINE_NUM << ") ";
+    stringstream ss;
+    ss << H;
+    cerr << args[idx] << " = " << ss.str();
+    debug_out(args, idx + 1, LINE_NUM, T...);
+}
+#ifdef DEBUG
+#define debug(...) debug_out(vec_splitter(#__VA_ARGS__), 0, __LINE__, __VA_ARGS__)
+#else
+#define debug(...) 42
+#endif
+
+void sieve() {
+    spf[1] = 1;
+    for (int i = 2; i < MAXN; i++)  spf[i] = i;
+    for (int i = 4; i < MAXN; i += 2) spf[i] = 2;
+    for (int i = 3; i * i < MAXN; i++) {
+        if (spf[i] == i)
+            for (int j = i * i; j < MAXN; j += i)
+                if (spf[j] == j)  spf[j] = i;
+    }
+}
+vector<int> getFactorization(int x) {
+    vector<int> ret;
+    while (x != 1) {
+        ret.push_back(spf[x]);
+        x = x / spf[x];
+    }
+    return ret;
+}
+
+ll exp(ll n, ll m) {
+    ll a = 1;
+    while (m) {
+        if (m & 1) a = (a * n % mod) % mod;
+        m /= 2;
+        n = (n * n) % mod;
+    }
+    return a;
+}
+
+void pre() {
+    fac1[0] = fac2[0] = inv[1] = 1;
+    for (int i = 1; i < MAXN; i++) {
+        fac1[i] = (fac1[i - 1] * i) % mod;
+        if (i > 1) inv[i] = (mod - ((ll)(mod / i) * inv[mod % i]) % mod) % mod;
+    }
+    for (int i = 1; i < MAXN; i++) fac2[i] = (fac2[i - 1] * inv[i]) % mod;
+}
+ll C(int n, int k) {
+    if (n < k) return 0;
+    return ((fac1[n] * fac2[n - k] % mod) * fac2[k] % mod);
+}
+class Person {
+private:
+    string name;
+    int age;
+    float height;
+public:
+    Person()
+    {
+        name = "Rocky";
+        age = 21;
+        height = 170.0;
+    }
+    Person(string n, int a, float h)
+    {
+        name = n;
+        age = a;
+        height = h;
+    }
+    Person(Person &ob)
+    {
+        name = ob.name;
+        age = ob.age;
+        height = ob.height;
+    }
+    void getdata();
+};
+void Person::getdata()
+{
+    cout << endl << name;
+    cout << endl << age;
+    cout << endl << height;
+}
+class increase
+{
+private:
+    int num;
+public:
+    increase(int n = 0)
+    {
+        num = n;
+    }
+    void operator++()
+    {
+        ++num;
+    }
+    void operator++(int)
+    {
+        num++;
+    }
+    void Printer()
+    {
+        cout << endl << "number is" << num;
+    }
+};
+
+struct Node {
+    int data;
+    struct Node* left;
+    struct Node* right;
+
+    Node(int val) {
+        data = val;
+        left = NULL;
+        right = NULL;
+    }
+};
+
+// BINARY tree Traversals
+void preorder(struct Node* root) {
+    if (root == NULL) return;
+    cout << root->data << " ";
+    preorder(root->left);
+    preorder(root->right);
+}
+
+void inorder(struct Node* root) {
+    if (root == NULL) return;
+    inorder(root -> left);
+    cout << root->data;
+    inorder(root->right);
+}
+
+void postorder(struct Node* root) {
+    if (root == NULL) return;
+    postorder(root->left);
+    postorder(root->right);
+    cout << root->data;
+}
+
+//Building tree from preorder and inorder
+/* Algorithm:
+* Pick element from preorder and create a node
+* increment preorder idx
+* Search for picked element's pos in inorder
+* call to build left subtree from inorder's 0 to pos-1
+* call to build right subtree from inorder pos+1 to n
+* Return the node
+*/
+int search(int inorder[], int start, int end, int curr) {
+    for (int i = start; i <= end; i++) {
+        if (inorder[i] == curr) return i;
+    }
+    return -1;
+}
+Node* buildTree(int preorder[], int inorder[], int start, int end) {
+    static int idx = 0;
+    if (start > end) return NULL;
+    int curr = preorder[idx];
+    idx++;
+    Node* node = new Node(curr);
+    if (start == end) return node;
+    int pos = search(inorder, start, end, curr);
+    node->left = buildTree(preorder, inorder, start, pos - 1);
+    node->right = buildTree(preorder, inorder, pos + 1, end);
+}
+
+//Building tree from postorder and inorder
+/* Algorithm:
+* Start from the end of postorder & pick element to create node
+* Decrement postoreder idx
+* Search for picked element's pos in inorder
+* Call to build right subtree from inorder's pos+1 to n
+* Call to build left subtree from inorder 0 to pos-1
+* Return the node
+*/
+Node* buildtree(int postorder[], int inorder[], int start, int end) {
+    static int idx = 4;
+    if (start > end) return NULL;
+    int val = postorder[idx];
+    idx--;
+    Node* curr = new Node(val);
+    if (start == end) return curr;
+    int pos = search(inorder, start, end, val);
+    curr->right = buildtree(postorder, inorder, pos + 1, end);
+    curr->left = buildtree(postorder, inorder, start, pos - 1);
+    return curr;
+}
+
+//Level Order Traversal
+//Implementation using Queue
+void printLevelOrder(Node* root) {
+    if (root == NULL) return;
+    
+    queue<Node*> q;
+    q.push(root);
+    q.push(NULL);
+
+    while (!q.empty()) {
+        Node* node = q.front();
+        q.pop();
+        if (node != NULL) {
+            cout << node->data << " ";
+            if (node->left)
+                q.push(node->left);
+            if (node->right)
+                q.push(node->right);
+        }
+        else if (!q.empty())
+            q.push(NULL);
+    }
+}
+
+//Find sum of nodes at Kth level of binary tree
+int sumAtK(Node* root, int K) {
+    if (root == NULL) return -1;
+    queue<Node*> q;
+    q.push(root);
+    q.push(NULL);
+    int level = 0;
+    int sum = 0;
+    while (!q.empty()) {
+        Node* node = q.front();
+        q.pop();
+        if (node != NULL) {
+            if (level == K) {
+                sum += node->data;
+            }
+            if (node->left) {
+                q.push(node->left);
+            }
+            if (node->right) {
+                q.push(node->right);
+            }
+        }
+        else if (!q.empty()) {
+            q.push(NULL);
+            level++;
+        }
+    }
+    return sum;
+}
+
+//Count all the nodes in a Binary Tree
+//Leftsubtree count + Rightsubtree count + 1
+int countNodes(Node* root) {
+    if (root == NULL) return 0;
+    return countNodes(root->left) + countNodes(root->right) + 1;
+}
+//Sum all the nodes in a binary tree
+int sumNodes(Node* root) {
+    if (root == NULL) return 0;
+    return sumNodes(root->left) + sumNodes(root->right) + root->data;
+}
+
+//Height of a Tree: Depth of deepest node
+//max(leftHeight,RightHeight)+1
+int calcHeight(Node* root) {
+    if (root == NULL) return 0;
+    int lHeight = calcHeight(root->left);
+    int rHeight = calcHeight(root->right);
+    return max(lHeight, rHeight) + 1;
+}
+
+//Diameter of binary tree: number of nodes in longest path between any two leaves
+//MAX(LeftDIameter, RightDiameter, LeftHeight + RightHeight + 1)
+int calcDiameter(Node* root) {
+    if (root == NULL) return 0;
+    int lHeight = calcHeight(root->left);
+    int rHeight = calcHeight(root->right);
+    int currDiamter = lHeight + rHeight + 1;
+    int lDiameter = calcDiameter(root->left);
+    int rDiameter = calcDiameter(root->right);
+    return max(currDiamter, max(lDiameter, rDiameter));
+}
+//Time complexity=O(N^2)
+
+//optimized approach for diameter
+//By simultaneously computing diameter and height
+int Diameter(Node* root, int* height) {
+    if (root == NULL) {
+        *height = 0;
+        return 0;
+    }
+    int lh = 0, rh = 0;
+    int lDiameter = Diameter(root->left, &lh);
+    int rDiameter = Diameter(root->right, &rh);
+    int currDiameter = lh + rh + 1;
+    *height = max(lh, rh) + 1;
+    return max(currDiameter, max(lDiameter, rDiameter));
+}
+
+//Sum Replacement in  a binary tree
+//Replace the value of each node with the sum of all subtree nodes and itself
+void sumReplace(Node* root) {
+    if (root == NULL) return;
+    sumReplace(root->left);
+    sumReplace(root->right);
+    if (root->left != NULL) {
+        root->data += root->left->data;
+    }
+    if (root->right != NULL) {
+        root->data += root->right->data;
+    }
+}
+
+//Balanced Height Tree: For each node, the difference
+//between heights of left subtree & right subtree is atmost 1
+bool isBalanced(Node* root) {
+    if (root == NULL) return true;
+    if (isBalanced(root->left) == false) {
+        return false;
+    }
+    if (isBalanced(root->right) == false) {
+        return false;
+    }
+    int lh = calcHeight(root->left);
+    int rh = calcHeight(root->right);
+    if (abs(lh - rh) <= 1)  return true;
+    else return false;
+}
+//Time complexity: O(N^2)
+
+//optimized approach by maintaining height pointer
+//which keeps calculating the height along with function calls
+bool isBalanced(Node* root, int* height) {
+    int lh = 0, rh = 0;
+    if (isBalanced(root->left, &lh) == false) return false;
+    if (isBalanced(root->right, &rh) == false) return false;
+    *height = max(lh, rh) + 1;
+    if (abs(lh - rh) <= 1) {
+        return true;
+    }
+    else return false;
+}
+//Time complexity: O(N)
+
+//Right view of Binary tree
+//print rightmost node at each level of the tree
+void rightView(Node* root) {
+    if (root == NULL) return;
+    
+    queue<Node*> q;
+    q.push(root);
+
+    while (!q.empty()) {
+        int n = q.size();
+        rep(i, n) {
+            Node* curr = q.front();
+            q.pop();
+            
+            if (i == n - 1) {
+                cout << curr->data << " ";
+            }
+
+            if (curr->left != NULL) {
+                q.push(curr->left);
+            }
+            if (curr->right != NULL) {
+                q.push(curr->right);
+            }
+        }
+    }
+}
+
+//Left view of Binary tree
+void leftView(Node* root) {
+    if (root == NULL) return;
+    queue<Node*> q;
+    q.push(root);
+
+    while (!q.empty()) {
+        int n = q.size();
+        rep(i, n) {
+            Node* curr = q.front();
+            q.pop();
+            if (i == 0) cout << curr->data << " ";
+            
+            if (curr->left != NULL) {
+                q.push(curr->left);
+            }
+            if (curr->right != NULL) {
+                q.push(curr->right);
+            }
+        }
+        
+    }
+}
+
+//Shortest distance between 2 nodes
+/*
+Strategy:
+1. Find the LCA (Lowest common ancestor)
+2. Find the distance of n1(d1) & n2(d2) from LCA
+3. Return (d1+d2)
+*/
+Node* LCA(Node* root, int n1, int n2) {
+    if (root == NULL) {
+        return NULL;
+    }
+    if (root->data = n1 || root->data == n2) {
+        return root;
+    }
+    Node* left = LCA(root->left, n1, n2);
+    Node* right = LCA(root->right, n1, n2);
+
+    if (left != NULL && right != NULL) {
+        return root;
+    }
+    if (left == NULL && right == NULL) {
+        return NULL;
+    }
+    if (left != NULL) {
+        return LCA(root->left, n1, n2);
+    }
+    return LCA(root->right, n1, n2);
+}
+
+int findDist(Node* root, int k, int dist) {
+    if (root == NULL) {
+        return -1;
+    }
+    if (root->data == k) {
+        return dist;
+    }
+    int left = findDist(root->left, k, dist + 1);
+    if (left != -1) return left;
+    return findDist(root->right, k, dist + 1);
+}
+
+int distBtwNodes(Node* root, int n1, int n2) {
+    Node* lca = LCA(root, n1, n2);
+    int d1 = findDist(lca, n1, 0);
+    int d2 = findDist(lca, n2, 0);
+    return d1 + d2;
+}
+
+//Flatten a binary tree:
+/*
+* Given a binary tree, flatten it into linked list inplace
+* After flattening, left of each node should point to NULL
+* and right should contain next node in preorder sequence.
+* (It is NOT ALLOWED to use other data structures)
+*/
+/*
+* Strategy:
+* 1.Recursively flatten the left and right subtree
+* 2.Store the left tail & right tail
+* 3.Store rightsubtree in 'temp' and make left subtree as right subtree
+* 4.Join right subtree with left tail
+* 5.Return right tail (for flattening purpose)
+*/
+void flatten(Node* root) {
+    if (root == NULL || (root->left == NULL && root->right == NULL)) {
+        return;
+    }
+    if (root->left != NULL) {
+        flatten(root->left);
+        Node* temp = root->right;
+        root->right = root->left;
+        root->left = NULL;
+
+        Node* t = root->right;
+        while (t->right != NULL) {
+            t = t->right;
+        }
+
+        t->right = temp;
+    }
+    flatten(root->right);
+}
+
+//Print all nodes at distance k from a given node
+//Case1: Node's subtree
+//Case2: Node's ancestors: for all ancestors search other subtree nodes at (k-d)
+// if node in left subtree, search right and vice-versa
+//case 1
+void printSubtreeNodes(Node* root, int k) {
+    if (root == NULL || k < 0) {
+        return;
+    }
+    if (k == 0) {
+        cout << root->data << " ";
+        return;
+    }
+    printSubtreeNodes(root->left, k - 1);
+    printSubtreeNodes(root->right, k - 1);
+}
+//case 2
+int printNodesAtk(Node* root, Node* target, int k) {
+    if (root == NULL) {
+        return -1;
+    }
+    if (root == target) {
+        printSubtreeNodes(root, k);
+        return 0;
+    }
+    int dl = printNodesAtk(root->left, target, k);
+    if (dl != -1) {
+        if (dl + 1 == k) {
+            cout << root->data << " ";
+        }
+        else {
+            printSubtreeNodes(root->right, k - dl - 2);
+        }
+        return 1 + dl;
+    }
+    int dr = printNodesAtk(root->right, target, k);
+    if (dr != -1) {
+        if (dr + 1 == k) {
+            cout << root->data << " ";
+        }
+        else {
+            printSubtreeNodes(root->left, k - dr - 2);
+        }
+        return 1 + dr;
+    }
+
+    return -1;
+}
+
+//LCA : using property of path change
+bool getPath(Node* root, int key, vi& path) {
+    if (root == NULL) return false;
+    path.push_back(root->data);
+    if (root->data == key) return true;
+    if (getPath(root->left, key, path) || getPath(root->right,key,path)) {
+        return true;
+    }
+    path.pop_back();
+    return false;
+}
+int lca(Node* root, int n1, int n2) {
+    vi path1, path2;
+    if (!getPath(root, n1, path1) || !getPath(root, n2, path2)) {
+        return -1;
+    }
+    int pc;
+    for (pc = 0; pc < path1.size() && path2.size(); pc++) {
+        if (path1[pc] != path2[pc]) break;
+    }
+    return path1[pc - 1];
+}
+
+//alternate strategy (optimized)
+Node* lca2(Node* root, int n2, int n1) {
+    if (root == NULL) {
+        return NULL;
+    }
+    if (root->data == n1 || root->data == n2) {
+        return root;
+    }
+    Node* leftLCA = lca2(root->left, n2, n1);
+    Node* rightLCA = lca2(root->right, n2, n1);
+    if (leftLCA && rightLCA) {
+        return root;
+    }
+    if (leftLCA != NULL) {
+        return leftLCA;
+    }
+    return rightLCA;
+}
+
+//Maximum Path Sum: Maximum possible sum of a path
+//in binary tree starting and ending at any node
+/*
+* Strategy:
+* 1.Node val
+* 2.Max path through left child + node val
+* 3.Max path through right child + node val
+* 4.Max path through left child + Max path through right child + node val
+*/
+int maxPathSumUtil(Node* root, int& ans) {
+    if (root == NULL) return 0;
+    int left = maxPathSumUtil(root->left, ans);
+    int right = maxPathSumUtil(root->right, ans);
+    
+    int nodeMax = max(max(root->data, root->data + left + right), max(root->data + left, root->data + right));
+    ans = max(ans, nodeMax);
+    int singlePathSum = max(root->data, max(root->data + left, root->data + right)); //IMPORTANT to note
+    return singlePathSum;
+}
+int maxPathSum(Node* root) {
+    int ans = INT_MIN;
+    maxPathSumUtil(root, ans);
+    return ans;
+}
+
+#define FIO ios_base::sync_with_stdio(false);cin.tie(0);cout.tie(0)
+#define test ll t; cin>>t; while(t--)
+int main()
+{
+    ios::sync_with_stdio(0);
+    cin.tie(0); cout.tie(0);
+    // freopen("input.txt","r",stdin); freopen("output.txt","w",stdout);
+
+
+
+    return 0;
+}
