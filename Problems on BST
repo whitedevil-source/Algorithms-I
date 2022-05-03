@@ -1,0 +1,467 @@
+#include<iostream>
+#include<algorithm>
+#include<vector>
+#include<sstream>
+#include<stack>
+#include<queue>
+#include<deque>
+#include<cmath>
+#include<iomanip>
+#include<set>
+#include<map>
+#include<utility>
+
+
+using namespace std;
+
+#define ll long long
+#define pb push_back
+#define pll pair<ll,ll> 
+#define mll map<ll,ll>
+#define pii pair<int,int>
+#define vpii vector<pii>
+#define rep(i,n) for(int i=0; i<n; i++)
+#define All(x,v) for(auto x:v)
+#define arrin(a,n) ll a[n]; rep(i,n) cin>>a[i]
+#define vi vector<int>
+#define vll vector<ll>
+#define nl "\n"
+#define print(arr) All(x,arr) cout<<x<<" "; cout<<nl
+#define sz(x) (int)x.size()
+#define all(v) v.begin(),v.end()
+#define ing(m,ad) rep(i,m){ int u,v; cin>>u>>v; u--;v--; ad[u].pb(v); ad[v].pb(u);}
+#define vdsort(v) sort(v.begin(),v.end(),greater<int>())
+#define F first
+#define S second
+#define mod 1'000'000'007
+const int MAXN = 100'005;
+int spf[MAXN];
+ll fac1[MAXN], fac2[MAXN], inv[MAXN];
+ll gcd(ll x, ll y) { return y ? gcd(y, x % y) : x; }
+
+template <typename C, typename T = std::decay_t<decltype(*begin(std::declval<C>()))>, typename std::enable_if<!std::is_same<C, std::string>::value>::type* = nullptr>
+std::ostream& operator<<(std::ostream& os, const C& container)
+{
+    bool first = true;
+    std::stringstream ss;
+    ss << '[';
+    for (const auto& x : container)
+    {
+        if (!first)
+        {
+            ss << ", ";
+        }
+        first = false;
+        ss << x;
+    }
+    ss << ']';
+    return os << ss.str();
+}
+template <class T1, class T2>
+std::ostream& operator<<(std::ostream& os, const std::pair<T1, T2>& p)
+{
+    os << '{' << p.first << ", " << p.second << '}';
+    return os;
+}
+vector<string> vec_splitter(string S)
+{
+    S += ',';
+    vector<string> res;
+    while (!S.empty())
+    {
+        res.push_back(S.substr(0, S.find(',')));
+        S = S.substr(S.find(',') + 1);
+    }
+    return res;
+}
+
+template <typename Head, typename... Tail>
+void debug_out(vector<string> args, int idx, int LINE_NUM, Head H, Tail... T)
+{
+    if (idx > 0)
+        cerr << ", ";
+    else
+        cerr << "Line(" << LINE_NUM << ") ";
+    stringstream ss;
+    ss << H;
+    cerr << args[idx] << " = " << ss.str();
+    debug_out(args, idx + 1, LINE_NUM, T...);
+}
+#ifdef DEBUG
+#define debug(...) debug_out(vec_splitter(#__VA_ARGS__), 0, __LINE__, __VA_ARGS__)
+#else
+#define debug(...) 42
+#endif
+
+void sieve() {
+    spf[1] = 1;
+    for (int i = 2; i < MAXN; i++)  spf[i] = i;
+    for (int i = 4; i < MAXN; i += 2) spf[i] = 2;
+    for (int i = 3; i * i < MAXN; i++) {
+        if (spf[i] == i)
+            for (int j = i * i; j < MAXN; j += i)
+                if (spf[j] == j)  spf[j] = i;
+    }
+}
+vector<int> getFactorization(int x) {
+    vector<int> ret;
+    while (x != 1) {
+        ret.push_back(spf[x]);
+        x = x / spf[x];
+    }
+    return ret;
+}
+
+ll exp(ll n, ll m) {
+    ll a = 1;
+    while (m) {
+        if (m & 1) a = (a * n % mod) % mod;
+        m /= 2;
+        n = (n * n) % mod;
+    }
+    return a;
+}
+
+void pre() {
+    fac1[0] = fac2[0] = inv[1] = 1;
+    for (int i = 1; i < MAXN; i++) {
+        fac1[i] = (fac1[i - 1] * i) % mod;
+        if (i > 1) inv[i] = (mod - ((ll)(mod / i) * inv[mod % i]) % mod) % mod;
+    }
+    for (int i = 1; i < MAXN; i++) fac2[i] = (fac2[i - 1] * inv[i]) % mod;
+}
+ll C(int n, int k) {
+    if (n < k) return 0;
+    return ((fac1[n] * fac2[n - k] % mod) * fac2[k] % mod);
+}
+class Person {
+private:
+    string name;
+    int age;
+    float height;
+public:
+    Person()
+    {
+        name = "Rocky";
+        age = 21;
+        height = 170.0;
+    }
+    Person(string n, int a, float h)
+    {
+        name = n;
+        age = a;
+        height = h;
+    }
+    Person(Person &ob)
+    {
+        name = ob.name;
+        age = ob.age;
+        height = ob.height;
+    }
+    void getdata();
+};
+void Person::getdata()
+{
+    cout << endl << name;
+    cout << endl << age;
+    cout << endl << height;
+}
+class increase
+{
+private:
+    int num;
+public:
+    increase(int n = 0)
+    {
+        num = n;
+    }
+    void operator++()
+    {
+        ++num;
+    }
+    void operator++(int)
+    {
+        num++;
+    }
+    void Printer()
+    {
+        cout << endl << "number is" << num;
+    }
+};
+
+struct Node {
+    int data;
+    struct Node* left;
+    struct Node* right;
+
+    Node(int val) {
+        data = val;
+        left = NULL;
+        right = NULL;
+    }
+};
+
+Node* constructBST(int preorder[], int* preorderIdx, int key, int min, int max, int n) {
+    if (*preorderIdx >= n) return NULL; //base case
+    Node* root = NULL;
+    if (key > min && key < max) {
+        root = new Node(key);
+        *preorderIdx = *preorderIdx + 1;
+
+        if (*preorderIdx < n) {
+            root->left = constructBST(preorder, preorderIdx, preorder[*preorderIdx], min, key, n);
+        }
+        if (*preorderIdx < n) {
+            root->right = constructBST(preorder, preorderIdx, preorder[*preorderIdx], key, max, n);
+        }
+    }
+    return root;
+}
+
+//Check for BST
+//node>max(leftsubtree) and node<min(rightsubtree)
+//Optimized approach: maintain 'min_allowed' and 'max_allowed' for nodes
+//Strategy: node(min,max):left(min,node) and right(node,max)
+bool isBST(Node* root, Node* min=NULL, Node* max=NULL) {
+    if (min != NULL && root->data <= min->data) {
+        return false;
+    }
+    if (max != NULL && root->data >= max->data) {
+        return false;
+    }
+    bool leftValid = isBST(root->left, min, root);
+    bool rightValid = isBST(root->right, root, max);
+    return leftValid && rightValid;
+}
+
+//Sorted array to balanced BST
+/*
+* Strategy:
+* 1.Make middle element the root
+* 2.Recursively do the same for subtrees
+*  a.start to mid-1 for left subtree
+*  b.mid+1 to end for right subtree
+*/
+Node* sortedArraytoBST(int arr[], int start, int end) {
+    if (start > end) return NULL;
+    int mid = (start + end) / 2;
+    Node* root = new Node(arr[mid]);
+
+    root->left = sortedArraytoBST(arr, start, mid - 1);
+    root->right = sortedArraytoBST(arr, mid + 1, end);
+    return root;
+}
+
+//CATALAN numbers
+/*
+* Catalan numbers are a sequence of natural numbers that occur in various
+* counting problems, often involving recursively defined objects.
+* Their closed form is in terms of binomial coefficients:
+* C(n)=(1/(n+1))2nCn = summation(C(i)*C(n-i)) i=0 to n-1
+* C(0)=1 ; C(1)=1; C(2)=C0C1+C1C0=2; C3=5 and so on
+*/
+int catalan(int n) {
+    int res = 0;
+    if (n <= 1) return 1;
+    for (int i = 0; i <= n - 1; i++) {
+        res += catalan(i) + catalan(n - 1 - i);
+    }
+    return res;
+}
+//Applications of catalan numbers:
+//possible BSTs, Paranthesis/Bracket combinations, possible forests
+//ways of triangulations, possible paths in matrix, dividing a circle
+//using N chords, Dyck words of given length, etc.
+
+//Possible BSTs from given n (number of nodes) and print the BSTs
+vector<Node*> constructTrees(int start, int end) {
+    vector<Node*> trees;
+    if (start > end) trees.push_back(NULL);
+
+    for (int i = start; i <= end; i++) {
+        vector<Node*> leftSubtrees = constructTrees(start, i - 1);
+        vector<Node*> rightSubtrees = constructTrees(i + 1, end);
+        
+        for (int j = 0; j < leftSubtrees.size(); j++) {
+            Node* left = leftSubtrees[j];
+            for (int k = 0; k < rightSubtrees.size(); k++) {
+                Node* right = rightSubtrees[k];
+                Node* node = new Node(i);
+                node->left = left;
+                node->right = right;
+                trees.push_back(node);
+            }
+        }
+    }
+    return trees;
+}
+
+//ZigZag Traversal
+/*
+* Strategy:
+* 1.Use 2 stacks-currentlevel and nextlevel
+* 2.variable LeftToRight
+* 3.if LeftToRight, push left child then right
+*   else push right child then left
+*/
+void zigzagTraversal(Node* root) {
+    if (root == NULL) return;
+    stack<Node*> currLevel;
+    stack<Node*> nextLevel;
+    bool leftToRight = true;
+
+    currLevel.push(root);
+    while (!currLevel.empty()) {
+        Node* temp = currLevel.top();
+        currLevel.pop();
+
+        if (temp) {
+            cout << temp->data << " ";
+
+            if (leftToRight) {
+                if (temp->left) nextLevel.push(temp->left);
+                if (temp->right) nextLevel.push(temp->right);
+            }
+            else {
+                if (temp->right) nextLevel.push(temp->right);
+                if (temp->left) nextLevel.push(temp->left);
+            }
+        }
+        if (currLevel.empty()) {
+            leftToRight = !leftToRight;
+            swap(currLevel, nextLevel);
+        }
+    }
+}
+
+//Identical BST
+//Identical BSTs are structurally identical and have equal values for every node
+/* Strategy:
+* If both empty, return true
+* If both non-empty,
+* a.check that data at nodes is equal
+* b.check if left subtrees are same
+* c.check if right subtrees are same
+* If(a,b,c) are true return true else return false
+*/
+bool isIdentical(Node* root1, Node* root2) {
+    if (root1 == NULL && root2 == NULL) return true;
+    else if (root1 == NULL || root2 == NULL) return false;
+    else {
+        bool cond1 = (root1->data == root2->data);
+        bool cond2 = isIdentical(root1->left, root2->left);
+        bool cond3 = isIdentical(root1->right, root2->right);
+
+        if (cond1 && cond2 && cond3) return true;
+        return false;
+    }
+}
+
+//Largest BST in a binary tree
+/* Strategy
+* For each node store the following info:
+* 1.min in subtree
+* 2.max in subtree
+* 3.subtree size
+* 4.size of largest BST
+* 5.isBST
+* Recursively traverse in bottom up manner
+* and find out size of largest BST
+*/
+struct Info {
+    int size;
+    int max;
+    int min;
+    int ans;
+    bool isBST;
+};
+Info largestBSTinBT(Node* root) {
+    if (root == NULL) {
+        return { 0,INT_MIN,INT_MAX,0,true };
+    }
+    if (root->left == NULL && root->right == NULL) {
+        return { 1,root->data,root->data,1,true };
+    }
+    Info leftInfo = largestBSTinBT(root->left);
+    Info rightInfo = largestBSTinBT(root->right);
+
+    Info curr;
+    curr.size = (1 + leftInfo.size + rightInfo.size);
+    if (leftInfo.isBST && rightInfo.isBST && leftInfo.max<root->data && rightInfo.min>root->data) {
+        curr.min = min(leftInfo.min, min(rightInfo.min, root->data));
+        curr.max = max(rightInfo.max, max(leftInfo.max, root->data));
+        curr.ans = curr.size;
+        curr.isBST = true;
+        return curr;
+    }
+    curr.ans = max(leftInfo.ans, rightInfo.ans);
+    curr.isBST = false;
+    return curr;
+}
+
+//Restore BST: 2 nodes of BST are swapped, We need to restore it
+/*Strategy: inorder of a BST is sorted
+2 elements in a sorted array are swapped
+CASE 1:swapped elements are not adjacent
+CASE 2:swapped elements are adjacent to each other
+Maintain 3 pointers -first,last and mid
+CASE 1:
+first: prev node node where number < previous
+mid: number where number < previous
+last: 2nd node where number < previous
+swap first with last
+CASE 2:
+first: prev node where number < previous
+mid: number where number < previous
+last: NULL
+swap first with mid
+*/
+void calcPointers(Node* root, Node** first, Node** mid, Node** last, Node** prev) {
+    if (root == NULL) return;
+    calcPointers(root->left, first, mid, last, prev);
+    if (*prev && root->data < (*prev)->data) {
+        if (!*first) {
+            *first = *prev;
+            *mid = root;
+        }
+        else {
+            *last = root;
+        }
+    }
+    *prev = root;
+    calcPointers(root->right, first, mid, last, prev);
+}
+void swap(int* a, int* b) {
+    int temp = *a;
+    *a = *b;
+    *b = temp;
+}
+void restoreBST(Node* root) {
+    Node* first, * mid, * last, * prev;
+    first = NULL;
+    mid = NULL;
+    last = NULL;
+    prev = NULL;
+    
+    calcPointers(root, &first, &mid, &last, &prev);
+    //case 1:
+    if (first && last) {
+        swap(&(first->data), &(last->data));
+    }
+    else if (first && mid) {
+        swap(&(first->data), &(mid->data));
+    }
+}
+
+#define FIO ios_base::sync_with_stdio(false);cin.tie(0);cout.tie(0)
+#define test ll t; cin>>t; while(t--)
+int main()
+{
+    ios::sync_with_stdio(0);
+    cin.tie(0); cout.tie(0);
+    // freopen("input.txt","r",stdin); freopen("output.txt","w",stdout);
+
+
+
+    return 0;
+}
